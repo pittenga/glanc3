@@ -1,8 +1,7 @@
 <template>
   <div id="app">
-    <Navbar/>
     <div id='content'>
-      <img src="./assets/logo.png">
+      <img src="../assets/logo.png">
       <h1>{{ msg }}</h1>
     </div>
   </div>

@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm'
 import App from './App.vue'
-import NotFound from './NotFound.vue'
-import About from './About.vue'
+import NotFound from './components/NotFound.vue'
+import About from './components/About.vue'
+import VueRouter from 'vue-router'
+import router from './router'
 
+Vue.use(VueRouter);
 Vue.use(BootstrapVue);
 
 import 'bootstrap/dist/css/bootstrap.css';
@@ -15,11 +18,6 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 // created automatically when the authorization flow completes for the first
 // time.
 const TOKEN_PATH = 'token.json';
-
-const routes = {
-  '/': App,
-  '/about': About
-}
 
 /**
 // Load client secrets from a local file.
@@ -114,14 +112,7 @@ function listEvents(auth) {
 **/
 new Vue({
   el: '#app',
-  data: {
-    currentRoute: window.location.pathname
-  },
-  computed: {
-    ViewComponent () {
-      return routes[this.currentRoute] || NotFound
-    }
-  },
-  render (h) { return h(this.ViewComponent) },
-
+  router: router,
+  render: h => h(App),
+  components: { App }
 })
