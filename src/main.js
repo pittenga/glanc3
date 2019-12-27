@@ -1,6 +1,8 @@
 import Vue from 'vue'
-import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm';
+import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm'
 import App from './App.vue'
+import NotFound from './NotFound.vue'
+import About from './About.vue'
 
 Vue.use(BootstrapVue);
 
@@ -13,9 +15,6 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 // created automatically when the authorization flow completes for the first
 // time.
 const TOKEN_PATH = 'token.json';
-
-const NotFound = { template: '<p>Page not found</p>' }
-const About = { template: '<p>about page</p>' }
 
 const routes = {
   '/': App,
@@ -123,5 +122,6 @@ new Vue({
       return routes[this.currentRoute] || NotFound
     }
   },
-  render (h) { return h(this.ViewComponent) }
+  render (h) { return h(this.ViewComponent) },
+
 })

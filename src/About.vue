@@ -32,7 +32,7 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to glanc3'
+      msg: 'Welcome to glanc3 About Page!'
     }
   }
 }
