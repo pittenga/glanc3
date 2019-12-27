@@ -14,6 +14,14 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 // time.
 const TOKEN_PATH = 'token.json';
 
+const NotFound = { template: '<p>Page not found</p>' }
+const About = { template: '<p>about page</p>' }
+
+const routes = {
+  '/': App,
+  '/about': About
+}
+
 /**
 // Load client secrets from a local file.
 fs.readFile('credentials.json', (err, content) => {
@@ -107,5 +115,13 @@ function listEvents(auth) {
 **/
 new Vue({
   el: '#app',
-  render: h => h(App)
+  data: {
+    currentRoute: window.location.pathname
+  },
+  computed: {
+    ViewComponent () {
+      return routes[this.currentRoute] || NotFound
+    }
+  },
+  render (h) { return h(this.ViewComponent) }
 })
