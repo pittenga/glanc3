@@ -12,25 +12,13 @@
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
-        <b-navbar-nav class="ml-auto">
 
-          <!--<b-button class="g-signin2" data-onsuccess="onSignIn" data-theme="dark" data-onfailure="onFailure"></b-button>-->
-          <div id="google-signin-button"></div>
-          <b-nav-item @click="signOut();">Sign-out</b-nav-item>
-          <b-nav-item-dropdown text="Lang" right>
-            <b-dropdown-item href="#">EN</b-dropdown-item>
-            <b-dropdown-item href="#">ES</b-dropdown-item>
-            <b-dropdown-item href="#">RU</b-dropdown-item>
-            <b-dropdown-item href="#">FA</b-dropdown-item>
-          </b-nav-item-dropdown>
-
-          <b-nav-item-dropdown right>
+        <div v-if="!signedIn" id="google-signin-button" class="ml-auto"></div>
+        <b-navbar-nav v-if="signedIn" class="ml-auto">
+          <b-nav-item-dropdown right :text="username">
             <!-- Using 'button-content' slot -->
-            <template v-slot:button-content>
-              <em>User</em>
-            </template>
-            <b-dropdown-item href="#">Profile</b-dropdown-item>
-            <b-dropdown-item href="#">Sign Out</b-dropdown-item>
+            <!-- <template v-slot:button-content>{{ username }}</template> -->
+            <b-dropdown-item @click="signOut();">Sign-out</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-collapse>
@@ -42,6 +30,12 @@
 
 export default {
   name: 'Navbar',
+  data () {
+    return {
+      signedIn: false,
+      username: "AP"
+    }
+  },
   mounted() {
     gapi.signin2.render('google-signin-button', {
       onsuccess: this.onSignIn
@@ -50,13 +44,16 @@ export default {
   methods: {
     onSignIn (user) {
       var profile = user.getBasicProfile()
+      this.signedIn = true;
       console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
       console.log('Name: ' + profile.getName());
+      this.username = profile.getName();
       console.log('Image URL: ' + profile.getImageUrl());
       console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
     },
     signOut() {
       var auth2 = gapi.auth2.getAuthInstance();
+      this.signedIn = false;
       auth2.signOut().then(function () {
         console.log('User signed out.');
       });
