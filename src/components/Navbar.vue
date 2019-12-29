@@ -13,11 +13,10 @@
 
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
-          <b-nav-form>
-            <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
-            <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
-          </b-nav-form>
 
+          <!--<b-button class="g-signin2" data-onsuccess="onSignIn" data-theme="dark" data-onfailure="onFailure"></b-button>-->
+          <div id="google-signin-button"></div>
+          <b-nav-item @click="signOut();">Sign-out</b-nav-item>
           <b-nav-item-dropdown text="Lang" right>
             <b-dropdown-item href="#">EN</b-dropdown-item>
             <b-dropdown-item href="#">ES</b-dropdown-item>
@@ -40,7 +39,28 @@
 </template>
 
 <script>
+
 export default {
-  name: 'Navbar'
-};
+  name: 'Navbar',
+  mounted() {
+    gapi.signin2.render('google-signin-button', {
+      onsuccess: this.onSignIn
+    })
+  },
+  methods: {
+    onSignIn (user) {
+      var profile = user.getBasicProfile()
+      console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+      console.log('Name: ' + profile.getName());
+      console.log('Image URL: ' + profile.getImageUrl());
+      console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+    },
+    signOut() {
+      var auth2 = gapi.auth2.getAuthInstance();
+      auth2.signOut().then(function () {
+        console.log('User signed out.');
+      });
+    }
+  }
+}
 </script>

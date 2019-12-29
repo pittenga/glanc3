@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm'
 import App from './App.vue'
-import NotFound from './components/NotFound.vue'
-import About from './components/About.vue'
 import VueRouter from 'vue-router'
 import router from './router'
 
@@ -110,6 +108,7 @@ function listEvents(auth) {
   });
 }
 **/
+
 new Vue({
   el: '#app',
   router: router,
