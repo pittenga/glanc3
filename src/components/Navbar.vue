@@ -12,8 +12,6 @@
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
-
-        <div v-if="!signedIn" id="google-signin-button" class="ml-auto"></div>
         <b-navbar-nav v-if="signedIn" class="ml-auto">
           <b-nav-item-dropdown right :text="username">
             <template v-slot:button-content>
@@ -24,26 +22,33 @@
             <b-dropdown-item @click="signOut();">Sign-out</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
+        <GoogleLogin v-else class="ml-auto" :params="params" :renderParams="renderParams" :onSuccess="onSignIn" :onFailure="onFailure"></GoogleLogin>
       </b-collapse>
     </b-navbar>
   </div>
 </template>
 
 <script>
-
+import GoogleLogin from 'vue-google-login';
 export default {
   name: 'Navbar',
   data () {
     return {
       signedIn: false,
       username: "AP",
-      imageURL: ""
+      imageURL: "",
+      params: {
+        client_id: "282176905151-ul8cu4nsahkd83nsahjar0am52dlop64.apps.googleusercontent.com"
+      },
+      renderParams: {
+        width: 250,
+        height: 50,
+        longtitle: true
+      }
     }
   },
-  mounted() {
-    gapi.signin2.render('google-signin-button', {
-      onsuccess: this.onSignIn
-    })
+  components: {
+    GoogleLogin
   },
   methods: {
     onSignIn (user) {
