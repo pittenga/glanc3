@@ -12,17 +12,21 @@
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
-        <b-navbar-nav v-if="signedIn" class="ml-auto">
-          <b-nav-item-dropdown right :text="username">
+        <b-navbar-nav v-if="isSignedIn" class="ml-auto">
+          <b-img :src="imageURL" fluid rounded="circle"/>
+          <b-nav-item-dropdown right :text="username" >
+
+            <!--
             <template v-slot:button-content>
               {{ username }} <b-img fluid :src="imageURL" rounded="circle" class="w-25"/>
             </template>
+          -->
             <!-- Using 'button-content' slot -->
             <!-- <template v-slot:button-content>{{ username }}</template> -->
             <b-dropdown-item @click="signOut();">Sign-out</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
-        <GoogleLogin v-else class="ml-auto" :params="params" :renderParams="renderParams" :onSuccess="onSignIn" :onFailure="onFailure"></GoogleLogin>
+        <GoogleLogin v-else :params="getClientId" :renderParams="renderParams" :onSuccess="onSignIn" :onFailure="onFailure"></GoogleLogin>
       </b-collapse>
     </b-navbar>
   </div>
@@ -30,16 +34,18 @@
 
 <script>
 import GoogleLogin from 'vue-google-login';
+import Vue from 'vue'
+import { LoaderPlugin } from 'vue-google-login';
+import { mapGetters, mapActions } from 'vuex'
+import { store } from '../store'
+Vue.use(LoaderPlugin, {client_id: '282176905151-ul8cu4nsahkd83nsahjar0am52dlop64.apps.googleusercontent.com'});
+
 export default {
   name: 'Navbar',
   data () {
     return {
-      signedIn: false,
       username: "AP",
       imageURL: "",
-      params: {
-        client_id: "282176905151-ul8cu4nsahkd83nsahjar0am52dlop64.apps.googleusercontent.com"
-      },
       renderParams: {
         width: 250,
         height: 50,
@@ -50,10 +56,23 @@ export default {
   components: {
     GoogleLogin
   },
+  mounted() {
+    Vue.GoogleAuth.then(auth2 => {
+        console.log(auth2.isSignedIn.get());
+        console.log(auth2);
+
+        if(auth2.isSignedIn.get()){
+          this.$store.dispatch('setSignedIn', true)
+          this.onSignIn(auth2.currentUser.s3.value);
+        }
+    })
+  },
   methods: {
     onSignIn (user) {
       var profile = user.getBasicProfile()
-      this.signedIn = true;
+      //this.signedIn = true;
+      console.log(profile);
+        this.$store.dispatch('setSignedIn', true)
       console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
       console.log('Name: ' + profile.getName());
       this.username = profile.getName();
@@ -63,12 +82,20 @@ export default {
     },
     signOut() {
       var auth2 = gapi.auth2.getAuthInstance();
-      this.signedIn = false;
+      //this.signedIn = false;
+        this.$store.dispatch('setSignedIn', false)
       this.imageURL = "";
       auth2.signOut().then(function () {
         console.log('User signed out.');
       });
+    },
+    onFailure(){
+      console.log("Failed to login to google");
     }
+  },
+  computed: {
+    ...mapGetters(['isSignedIn', 'getClientId']),
+    ...mapActions(['setSignedIn'])
   }
 }
 </script>
