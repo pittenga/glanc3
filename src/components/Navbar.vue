@@ -12,7 +12,8 @@
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
-        <b-navbar-nav v-if="isSignedIn" class="ml-auto">
+        <GoogleLogin v-if="!isSignedIn" class="ml-auto" :params="getClientId" :renderParams="renderParams" :onSuccess="onSignIn" :onFailure="onFailure"></GoogleLogin>
+        <b-navbar-nav v-else class="ml-auto">
           <b-img :src="imageURL" fluid rounded="circle"/>
           <b-nav-item-dropdown right :text="username" >
 
@@ -26,7 +27,7 @@
             <b-dropdown-item @click="signOut();">Sign-out</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
-        <GoogleLogin v-else :params="getClientId" :renderParams="renderParams" :onSuccess="onSignIn" :onFailure="onFailure"></GoogleLogin>
+
       </b-collapse>
     </b-navbar>
   </div>
@@ -58,9 +59,6 @@ export default {
   },
   mounted() {
     Vue.GoogleAuth.then(auth2 => {
-        console.log(auth2.isSignedIn.get());
-        console.log(auth2);
-
         if(auth2.isSignedIn.get()){
           this.$store.dispatch('setSignedIn', true)
           this.onSignIn(auth2.currentUser.s3.value);
@@ -70,9 +68,8 @@ export default {
   methods: {
     onSignIn (user) {
       var profile = user.getBasicProfile()
-      //this.signedIn = true;
-      console.log(profile);
-        this.$store.dispatch('setSignedIn', true)
+      this.$store.dispatch('setSignedIn', true)
+      console.log(user.getAuthResponse().id_token)
       console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
       console.log('Name: ' + profile.getName());
       this.username = profile.getName();
@@ -82,8 +79,7 @@ export default {
     },
     signOut() {
       var auth2 = gapi.auth2.getAuthInstance();
-      //this.signedIn = false;
-        this.$store.dispatch('setSignedIn', false)
+      this.$store.dispatch('setSignedIn', false)
       this.imageURL = "";
       auth2.signOut().then(function () {
         console.log('User signed out.');
